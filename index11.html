@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>interactive visualisation</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js">
+    </script>
+    <style>
+        body {
+            background-color: darkseagreen;
+        }
+
+        p {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Select an outcome </p>
+
+    <select name="Outcomes" id="outcome">
+        <option value="SBP">SBP</option>
+        <option value="ARDS">ARDS</option>
+        <option value="weight">weight</option>
+    </select>
+
+    <p>Select a grouping variable </p>
+
+    <select name="Group" id="group">
+        <option value="male">SBP</option>
+        <option value="old">old</option>
+        <option value="dead">dead</option>
+    </select>
+   
+    <div id="myDiv">
+
+    </div>
+
+        <script>
+        const data = [{ "hispanic": 0, "male": 0, "old": 0, "dead": 0, "SBP": 121.487, "weight": 63.4695, "ARDS": 0.0088, "dyspnea": 0.1766, "hypoxemia": 0.0265, "sample": 453 },
+        { "hispanic": 1, "male": 0, "old": 0, "dead": 0, "SBP": 121.423, "weight": 63.8618, "ARDS": 0.013, "dyspnea": 0.1591, "hypoxemia": 0.0273, "sample": 3853 },
+        { "hispanic": 0, "male": 1, "old": 0, "dead": 0, "SBP": 122.6301, "weight": 74.3693, "ARDS": 0.012, "dyspnea": 0.1687, "hypoxemia": 0.0193, "sample": 415 },
+        { "hispanic": 1, "male": 1, "old": 0, "dead": 0, "SBP": 121.3046, "weight": 73.8379, "ARDS": 0.0157, "dyspnea": 0.1568, "hypoxemia": 0.0308, "sample": 3501 },
+        { "hispanic": 0, "male": 0, "old": 1, "dead": 0, "SBP": 120.0199, "weight": 75.756, "ARDS": 0.1088, "dyspnea": 0.1497, "hypoxemia": 0.1293, "sample": 147 },
+        { "hispanic": 1, "male": 0, "old": 1, "dead": 0, "SBP": 121.0816, "weight": 76.4277, "ARDS": 0.0702, "dyspnea": 0.1758, "hypoxemia": 0.0887, "sample": 1297 },
+        { "hispanic": 0, "male": 1, "old": 1, "dead": 0, "SBP": 122.1498, "weight": 90.5307, "ARDS": 0.1128, "dyspnea": 0.1955, "hypoxemia": 0.1128, "sample": 133 },
+        { "hispanic": 1, "male": 1, "old": 1, "dead": 0, "SBP": 121.566, "weight": 89.0143, "ARDS": 0.0847, "dyspnea": 0.1437, "hypoxemia": 0.0979, "sample": 1287 },
+        { "hispanic": 0, "male": 0, "old": 0, "dead": 1, "SBP": 125.8889, "weight": 81.45, "ARDS": 0, "dyspnea": 0, "hypoxemia": 0, "sample": 2 },
+        { "hispanic": 1, "male": 0, "old": 0, "dead": 1, "SBP": 125.0605, "weight": 78.4145, "ARDS": 0.2273, "dyspnea": 0, "hypoxemia": 0.2273, "sample": 22 },
+        { "hispanic": 0, "male": 1, "old": 0, "dead": 1, "SBP": 110.8, "weight": 81.265, "ARDS": 0.5, "dyspnea": 0, "hypoxemia": 0.5, "sample": 2 },
+        { "hispanic": 1, "male": 1, "old": 0, "dead": 1, "SBP": 120.3677, "weight": 91.3292, "ARDS": 0.3636, "dyspnea": 0, "hypoxemia": 0.3636, "sample": 33 },
+        { "hispanic": 0, "male": 0, "old": 1, "dead": 1, "SBP": 116.8989, "weight": 78.9615, "ARDS": 0.2308, "dyspnea": 0, "hypoxemia": 0.2308, "sample": 13 },
+        { "hispanic": 1, "male": 0, "old": 1, "dead": 1, "SBP": 124.0749, "weight": 76.1999, "ARDS": 0.2727, "dyspnea": 0, "hypoxemia": 0.2727, "sample": 88 },
+        { "hispanic": 0, "male": 1, "old": 1, "dead": 1, "SBP": 121.5481, "weight": 92.5458, "ARDS": 0, "dyspnea": 0, "hypoxemia": 0, "sample": 11 },
+        { "hispanic": 1, "male": 1, "old": 1, "dead": 1, "SBP": 122.7266, "weight": 87.6138, "ARDS": 0.283, "dyspnea": 0, "hypoxemia": 0.3019, "sample": 106 }]
+
+            window.onload = function () {
+                document.getElementById("outcome").addEventListener("change", myFunction);
+                document.getElementById("group").addEventListener("change", myFunction);
+            }
+
+            function myFunction() {
+                var select1 = document.getElementById("outcome");
+                var value1 = select1.options[select1.selectedIndex].value;
+
+                var select2 = document.getElementById("group");
+                var value2 = select2.options[select2.selectedIndex].value;
+
+                var males_data = data.filter(obj => {
+                    return obj[value2] == 1
+                })
+
+                var males_ards = [];
+                for (var i = 0; i < 8; i++) {
+                    males_ards.push(males_data[i][value1]);
+                }
+
+                var males_samp = [];
+                for (var i = 0; i < 8; i++) {
+                    males_samp.push(males_data[i].sample);
+                }
+
+                var females_data = data.filter(obj => {
+                    return obj[value2] == 0
+                })
+
+                var females_ards = [];
+                for (var i = 0; i < 8; i++) {
+                    females_ards.push(females_data[i][value1]);
+                }
+
+                var females_samp = [];
+                for (var i = 0; i < 8; i++) {
+                    females_samp.push(females_data[i].sample);
+                }
+
+        function weightedAve(grp_ave, weight) {
+            var c = [];
+            var d = [];
+            for (var i = 0; i < 8; i++) {
+                c.push(grp_ave[i] * weight[i]);
+                d = c.reduce((a, b) => a + b) / weight.reduce((a, b) => a + b)
+            }
+            return d;
+        }
+
+
+        var y1 = weightedAve(males_ards, males_samp)
+        var y2 = weightedAve(females_ards, females_samp)
+
+        var yValues = new Array(y1, y2)
+
+
+        var plot = [
+            {
+                x: ['males', 'females'],
+                y: yValues,
+                type: 'bar'
+            }
+        ],
+            layout = {
+                title: {
+                    text: "Prevalence of ARDS by gender"
+                }
+            };
+
+        Plotly.newPlot('myDiv', plot, layout);
+
+            }
+    </script>
+
+</body>
+
+</html>
