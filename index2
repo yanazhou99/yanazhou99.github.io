@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart Selector</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            background-color: powderblue;
+        }
+        .chart-container {
+            width: 70%;
+            margin: 0 auto;
+               }
+    </style>
+</head>
+<body>
+    <h1>Chart Selector</h1>
+
+    <div>
+        <label for="outcome">Select Outcome:</label>
+        <select id="outcome">
+            <option value="Ferritin">Ferritin</option>
+            <option value="Troponin">Troponin</option>
+            <option value="Neutrophils">Neutrophils</option>
+            <option value="Lymphocytes">Lymphocytes</option>
+            <option value="CRP">CRP</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="group">Select Group:</label>
+        <select id="group">
+            <option value="COVID">COVID</option>
+            <option value="old">old</option>
+            <option value="male">male</option>
+            <option value="white">white</option>
+
+        </select>
+    </div>
+
+    <div>
+        <label for="chart-type">Select Chart Type:</label>
+        <select id="chart-type">
+            <option value="bar">BarChart</option>
+            <option value="boxplot">Boxplot</option>
+        </select>
+    </div>
+
+    <div class="chart-container" id="chart"></div>
+
+    <script>
+        const data =
+                [{ "COVID": 0, "old": 0, "male": 0, "white": 0, "Ferritin": 80.7962, "Troponin": 15.0776, "Neutrophils": 2.9622, "Lymphocytes": 1.009, "CRP": 72.698, "sample": 88 },
+                { "COVID": 1, "old": 0, "male": 0, "white": 0, "Ferritin": 78.2594, "Troponin": 14.5232, "Neutrophils": 6.5465, "Lymphocytes": 1.0095, "CRP": 67.4789, "sample": 23 },
+                { "COVID": 0, "old": 1, "male": 0, "white": 0, "Ferritin": 80.1051, "Troponin": 15.0196, "Neutrophils": 2.9655, "Lymphocytes": 1.0044, "CRP": 73.603, "sample": 33 },
+                { "COVID": 1, "old": 1, "male": 0, "white": 0, "Ferritin": 79.1869, "Troponin": 14.8105, "Neutrophils": 21.2747, "Lymphocytes": 0.6642, "CRP": 76.098, "sample": 38 },
+                { "COVID": 0, "old": 0, "male": 1, "white": 0, "Ferritin": 80.293, "Troponin": 15.2164, "Neutrophils": 2.9697, "Lymphocytes": 1.0025, "CRP": 85.2045, "sample": 83 },
+                { "COVID": 1, "old": 0, "male": 1, "white": 0, "Ferritin": 82.4478, "Troponin": 15.3914, "Neutrophils": 11.2725, "Lymphocytes": 0.86, "CRP": 92.2727, "sample": 24 },
+                { "COVID": 0, "old": 1, "male": 1, "white": 0, "Ferritin": 81.2627, "Troponin": 15.1298, "Neutrophils": 3.0922, "Lymphocytes": 1.0068, "CRP": 87.3127, "sample": 35 },
+                { "COVID": 1, "old": 1, "male": 1, "white": 0, "Ferritin": 81.1032, "Troponin": 15.2505, "Neutrophils": 17.6567, "Lymphocytes": 0.71, "CRP": 85.317, "sample": 64 },
+                { "COVID": 0, "old": 0, "male": 0, "white": 1, "Ferritin": 80.3315, "Troponin": 15.1271, "Neutrophils": 2.9658, "Lymphocytes": 1.0038, "CRP": 72.0842, "sample": 468 },
+                { "COVID": 1, "old": 0, "male": 0, "white": 1, "Ferritin": 81.9102, "Troponin": 14.701, "Neutrophils": 8.5887, "Lymphocytes": 0.9345, "CRP": 74.6818, "sample": 176 },
+                { "COVID": 0, "old": 1, "male": 0, "white": 1, "Ferritin": 80.7869, "Troponin": 15.1487, "Neutrophils": 3.0018, "Lymphocytes": 0.9997, "CRP": 76.5904, "sample": 195 },
+                { "COVID": 1, "old": 1, "male": 0, "white": 1, "Ferritin": 81.2481, "Troponin": 14.9856, "Neutrophils": 20.0563, "Lymphocytes": 0.6955, "CRP": 77.0856, "sample": 246 },
+                { "COVID": 0, "old": 0, "male": 1, "white": 1, "Ferritin": 80.5322, "Troponin": 14.9284, "Neutrophils": 2.9699, "Lymphocytes": 1.0067, "CRP": 84.4454, "sample": 353 },
+                { "COVID": 1, "old": 0, "male": 1, "white": 1, "Ferritin": 80.7558, "Troponin": 15.1274, "Neutrophils": 9.952, "Lymphocytes": 0.8898, "CRP": 83.6312, "sample": 190 },
+                { "COVID": 0, "old": 1, "male": 1, "white": 1, "Ferritin": 81.1269, "Troponin": 15.0935, "Neutrophils": 2.9539, "Lymphocytes": 0.9993, "CRP": 89.6938, "sample": 133 },
+                { "COVID": 1, "old": 1, "male": 1, "white": 1, "Ferritin": 79.9424, "Troponin": 14.9526, "Neutrophils": 21.6836, "Lymphocytes": 0.6442, "CRP": 89.0144, "sample": 241 }
+        ];
+      
+
+        function WeightedAverage(grp_ave, weight) {
+            var c = [];
+            var d = [];
+            for (var i = 0; i < 8; i++) {
+                c.push(grp_ave[i] * weight[i]);
+                d = c.reduce((a, b) => a + b) / weight.reduce((a, b) => a + b)
+            }
+            return d;
+        }
+          
+
+     
+        function createBarChart(data, outcome, group) {
+            const category1 = 0;
+            const category2 = 1;
+            const title = `Weighted Average ${outcome} in ${group}`;
+
+
+            const group1 = data.filter(obj => {
+                return obj[group] == category1;
+            })
+            const group2 = data.filter(obj => {
+                return obj[group] == category2;
+            })
+
+            var group1_outcome = [];
+            var group1_samp = [];       
+            var group2_outcome = [];
+            var group2_samp = [];
+
+
+            for (var i = 0; i < 8; i++) {
+                group1_outcome.push(group1[i][outcome]);
+                group1_samp.push(group1[i].sample);
+                group2_outcome.push(group2[i][outcome]);
+                group2_samp.push(group2[i].sample);
+            }
+
+            const trace1 = {
+                x: [category1, category2],
+                y: [
+                    WeightedAverage(group1_outcome, group1_samp),
+                    WeightedAverage(group2_outcome, group2_samp)
+                ],
+                type: 'bar',
+                text: [`${group} ${category1}`, `${group} ${category2}`],
+                marker: { color: 'light blue' }
+            };
+
+     
+            const layout = {
+                title: title,
+                xaxis: {
+                    title: group,
+                    tickmode: 'array',
+                    tickvals: [category1, category2],
+                    ticktext: [`${group} ${category1}`, `${group} ${category2}`]
+                },
+                yaxis: {
+                    title: outcome,
+                },
+            };
+
+            Plotly.newPlot('chart', [trace1], layout);
+        }
+
+
+   
+        function createBoxPlot(data, outcome, group) {
+            const title = `Boxplot of ${outcome} in ${group}`;
+
+            const trace1 = {
+                y: data.filter(item => item[group] === 0).map(item => item[outcome]),
+                name: `${group} 0`,
+                type: 'box',
+                boxpoints: 'outliers',
+                jitter: 0.3,
+                pointpos: -1.8
+            };
+
+            const trace2 = {
+                y: data.filter(item => item[group] === 1).map(item => item[outcome]),
+                name: `${group} 1`,
+                type: 'box',
+                boxpoints: 'outliers',
+                jitter: 0.3,
+                pointpos: -0.2
+            };
+
+            const layout = {
+                title: title,
+                yaxis: {
+                    title: outcome,
+                },
+            };
+
+            Plotly.newPlot('chart', [trace1, trace2], layout);
+        }
+
+ 
+        function updateChart() {
+            const outcome = document.getElementById("outcome").value;
+            const group = document.getElementById("group").value;
+            const chartType = document.getElementById("chart-type").value;
+
+            if (chartType === "bar") {
+                createBarChart(data, outcome, group);
+            } else if (chartType === "boxplot") {
+                createBoxPlot(data, outcome, group);
+            }
+        }
+
+        document.getElementById("outcome").addEventListener("change", updateChart);
+        document.getElementById("group").addEventListener("change", updateChart);
+        document.getElementById("chart-type").addEventListener("change", updateChart);
+
+            updateChart();
+    </script>
+</body>
+</html>
